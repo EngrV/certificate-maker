@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create professional, logo-branded certificates in your browser.">
+  <title>Certify Studio — Certificate Maker</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">✦</span><span>Certify<span class="brand-light"> Studio</span></span></a>
+    <div class="top-actions"><span class="local-tag">● Saved locally in your browser</span><button id="downloadTop" class="btn primary">Download certificate</button></div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-heading"><div><p class="eyebrow">WORKSPACE</p><h1>Certificate maker</h1></div></div>
+      <section class="panel">
+        <h2><span class="step">01</span> Brand identity</h2>
+        <label class="upload-zone" for="logoInput" id="dropZone">
+          <span class="upload-icon">＋</span><strong>Upload organization logo</strong><small>PNG, JPG, WEBP or SVG</small>
+          <img id="logoThumb" alt="Uploaded logo preview" hidden>
+          <span class="file-note" id="logoName">Your logo stays on this device</span>
+        </label>
+        <input id="logoInput" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+        <div class="color-row"><span>Detected brand colors</span><button id="refreshColors" class="text-button">Re-detect</button></div>
+        <div class="swatches" id="swatches"><i></i><i></i><i></i><i></i></div>
+        <p class="hint">Colors are sampled from your uploaded logo and used in the generated design.</p>
+      </section>
+
+      <section class="panel">
+        <h2><span class="step">02</span> Background design</h2>
+        <label class="field-label">Generation mode</label>
+        <div class="segmented"><button class="active" data-mode="hybrid">Templates + Auto</button><button data-mode="auto">Auto only</button></div>
+        <label class="field-label" for="template">Design style</label>
+        <select id="template">
+          <option value="elegant">Elegant gold</option><option value="modern">Modern minimal</option>
+          <option value="geometric">Geometric</option><option value="classic">Classic formal</option>
+          <option value="creative">Creative colorful</option>
+        </select>
+        <label class="field-label" for="borderStyle">Border treatment</label>
+        <select id="borderStyle"><option value="double">Double line</option><option value="single">Single line</option><option value="ornate">Ornamental corners</option><option value="none">No border</option></select>
+        <button id="generateBtn" class="btn secondary full">✦ Generate new background</button>
+      </section>
+
+      <section class="panel">
+        <h2><span class="step">03</span> Certificate content</h2>
+        <label class="field-label" for="orgName">Organization name</label><input id="orgName" value="YOUR ORGANIZATION">
+        <label class="field-label" for="certificateTitle">Certificate heading</label><input id="certificateTitle" value="CERTIFICATE OF RECOGNITION">
+        <label class="field-label" for="subtitle">Subtitle</label><input id="subtitle" value="THIS CERTIFICATE IS PROUDLY PRESENTED TO">
+        <label class="field-label" for="recipient">Recipient name</label><input id="recipient" value="Recipient's Full Name">
+        <label class="field-label" for="bodyText">Description</label><textarea id="bodyText" rows="3">In recognition of your valuable contribution, dedication, and outstanding commitment.</textarea>
+        <label class="field-label" for="dateText">Date / occasion</label><input id="dateText" value="Given this 13th day of November, 2026">
+        <div class="two-fields"><div><label class="field-label" for="sign1">Signatory 1</label><input id="sign1" value="NAME OF SIGNATORY"></div><div><label class="field-label" for="role1">Position</label><input id="role1" value="Position / Title"></div></div>
+        <div class="two-fields"><div><label class="field-label" for="sign2">Signatory 2</label><input id="sign2" value="NAME OF SIGNATORY"></div><div><label class="field-label" for="role2">Position</label><input id="role2" value="Position / Title"></div></div>
+      </section>
+
+      <section class="panel">
+        <h2><span class="step">04</span> Page & layout</h2>
+        <label class="field-label" for="paperPreset">Page preset</label>
+        <select id="paperPreset"><option value="custom">Custom dimensions</option><option value="a4">A4 landscape</option><option value="letter">US Letter landscape</option><option value="legal">US Legal landscape</option></select>
+        <div class="two-fields"><div><label class="field-label" for="pageWidth">Width (in)</label><input id="pageWidth" type="number" min="3" max="30" step=".1" value="11.7"></div><div><label class="field-label" for="pageHeight">Height (in)</label><input id="pageHeight" type="number" min="3" max="30" step=".1" value="8.3"></div></div>
+        <label class="field-label" for="dpi">Export quality</label><select id="dpi"><option value="150">150 DPI — standard</option><option value="300" selected>300 DPI — print quality</option></select>
+        <label class="field-label" for="logoPosition">Logo position</label><select id="logoPosition"><option value="top">Top center</option><option value="left">Top left</option><option value="right">Top right</option><option value="none">Hide logo</option></select>
+      </section>
+      <section class="panel">
+        <h2><span class="step">05</span> Selected element</h2>
+        <p class="hint">Click or drag text on the preview to reposition it. Select an item to adjust its size and color.</p>
+        <div class="two-fields"><div><label class="field-label" for="fontSize">Font size</label><input id="fontSize" type="number" min="8" max="120" value="30"></div><div><label class="field-label" for="textColor">Text color</label><input id="textColor" type="color" value="#173b69"></div></div>
+        <button id="resetLayout" class="btn ghost full">Reset text positions</button>
+      </section>
+      <footer class="sidebar-footer">CERTIFY STUDIO <span>•</span> Runs locally in your browser</footer>
+    </aside>
+
+    <section class="workspace">
+      <div class="workspace-head"><div><p class="eyebrow">LIVE CANVAS</p><h2>Your certificate</h2><p class="subtle">Select and drag text elements directly on the certificate.</p></div><div class="zoom-controls"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">Fit</span><button id="zoomIn" aria-label="Zoom in">＋</button></div></div>
+      <div class="canvas-wrap" id="canvasWrap"><canvas id="certificateCanvas" width="3508" height="2480"></canvas></div>
+      <div class="canvas-footer"><span id="canvasDimensions">11.7 × 8.3 inches · 300 DPI</span><span id="selectionLabel">No element selected</span></div>
+      <div class="download-strip"><div><strong>Ready to export?</strong><small>High-resolution files are generated on your device.</small></div><div class="download-actions"><button id="pngBtn" class="btn secondary">Download PNG</button><button id="jpgBtn" class="btn secondary">Download JPG</button><button id="pdfBtn" class="btn primary">Download PDF</button></div></div>
+    </section>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
