@@ -24,3 +24,9 @@ A browser-based certificate designer for GitHub Pages.
 - All image processing and exports happen in the browser.
 - The Word-compatible `.doc` export embeds the finished certificate as an image. It preserves the design, but the text is not separately editable in Word.
 - After replacing the files on GitHub Pages, hard-refresh the website to ensure the new JavaScript and CSS are loaded.
+
+
+## Modern design and logo controls
+- Six selectable background styles: Modern minimalist, Luxury gold, Corporate modern, Elegant contemporary, Creative modern, and Silver professional.
+- Background thumbnails are shown in the sidebar and below the live certificate preview.
+- Use the Logo size slider (25%–250%) to resize the uploaded logo proportionally. The original aspect ratio is preserved; the logo is never stretched.
