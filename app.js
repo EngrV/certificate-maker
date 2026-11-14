@@ -6,7 +6,7 @@ const ctx = canvas.getContext('2d');
 const state = {
   logo: null, colors: ['#173b69','#d4a94f','#e9edf2','#ffffff'],
   template: 'elegant', mode: 'hybrid', selected: null, logoScale: 1,
-  positions: {}, signatures: {sign1:null, sign2:null},
+  positions: {}, signatories: [], nextSignatoryId: 1,
   canvasW: 0, canvasH: 0
 };
 const defaults = {
@@ -16,12 +16,9 @@ const defaults = {
  recipient:{x:.5,y:.46,size:76,color:'#173b69',font:'600'},
  body:{x:.5,y:.59,size:28,color:'#475569',font:'400'},
  date:{x:.5,y:.72,size:23,color:'#596579',font:'400'},
- sign1:{x:.29,y:.87,size:22,color:'#173b69',font:'700'},
- role1:{x:.29,y:.92,size:17,color:'#596579',font:'400'},
- sign2:{x:.71,y:.87,size:22,color:'#173b69',font:'700'},
- role2:{x:.71,y:.92,size:17,color:'#596579',font:'400'}
+
 };
-const fields = {org:'orgName',title:'certificateTitle',subtitle:'subtitle',recipient:'recipient',body:'bodyText',date:'dateText',sign1:'sign1',role1:'role1',sign2:'sign2',role2:'role2'};
+const fields = {org:'orgName',title:'certificateTitle',subtitle:'subtitle',recipient:'recipient',body:'bodyText',date:'dateText'};
 const presets = {a4:[11.7,8.3],letter:[11,8.5],legal:[14,8.5]};
 let toastTimer = null, drag = null;
 function toast(message){ const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
@@ -97,7 +94,34 @@ function drawContainedImage(target,img,boxX,boxY,boxW,boxH,align='center'){
  target.drawImage(img,x,boxY+(boxH-drawH)/2,drawW,drawH);
 }
 function drawLogo(target,w,h){if(!state.logo||$('logoPosition').value==='none')return;const scale=state.logoScale||1,boxW=w*.18*scale,boxH=h*.15*scale,boxY=h*.035;let boxX=(w-boxW)/2,align='center';if($('logoPosition').value==='left'){boxX=w*.055;align='left';}if($('logoPosition').value==='right'){boxX=w-boxW-w*.055;align='right';}drawContainedImage(target,state.logo,boxX,boxY,boxW,boxH,align);}
-function drawSignatures(target,w,h){[['sign1',.29],['sign2',.71]].forEach(([key,x])=>{const img=state.signatures[key];if(!img)return;drawContainedImage(target,img,w*(x-.075),h*.79,w*.15,h*.07);});}
+function signatoryX(index,count){if(count===1)return .5;const left=count===2?.29:count===3?.20:.14;const right=1-left;return left+(right-left)*(index/(count-1));}
+function drawSignatures(target,w,h){const count=state.signatories.length;state.signatories.forEach((person,index)=>{if(!person.image)return;const x=signatoryX(index,count),boxW=Math.min(.16,.72/count)*w;drawContainedImage(target,person.image,w*x-boxW/2,h*.785,boxW,h*.065);});}
+function addSignatory(name='NAME OF SIGNATORY',role='Position / Title'){
+ if(state.signatories.length>=4){toast('You can add up to four signatories.');return;}
+ const id=state.nextSignatoryId++,nameKey='person'+id+'Name',roleKey='person'+id+'Role';
+ const person={id,nameKey,roleKey,image:null};state.signatories.push(person);
+ const card=document.createElement('div');card.className='signatory-card';card.dataset.signatoryId=String(id);
+ const heading=document.createElement('div');heading.className='signatory-card-heading';
+ const title=document.createElement('strong');title.textContent='Signatory '+state.signatories.length;
+ const remove=document.createElement('button');remove.type='button';remove.className='remove-signatory';remove.textContent='Remove';remove.setAttribute('aria-label','Remove signatory '+state.signatories.length);
+ heading.append(title,remove);
+ const nameLabel=document.createElement('label');nameLabel.className='field-label';nameLabel.htmlFor=nameKey;nameLabel.textContent='Full name';
+ const nameInput=document.createElement('input');nameInput.id=nameKey;nameInput.value=name;
+ const roleLabel=document.createElement('label');roleLabel.className='field-label';roleLabel.htmlFor=roleKey;roleLabel.textContent='Position / title';
+ const roleInput=document.createElement('input');roleInput.id=roleKey;roleInput.value=role;
+ const sigLabel=document.createElement('label');sigLabel.className='field-label';sigLabel.htmlFor='signature'+id;sigLabel.textContent='Upload signature (optional)';
+ const sigInput=document.createElement('input');sigInput.id='signature'+id;sigInput.type='file';sigInput.accept='image/png,image/jpeg,image/webp';
+ card.append(heading,nameLabel,nameInput,roleLabel,roleInput,sigLabel,sigInput);$('signatoryList').appendChild(card);
+ defaults[nameKey]={x:signatoryX(state.signatories.length-1,state.signatories.length),y:.87,size:22,color:'#173b69',font:'700'};
+ defaults[roleKey]={x:signatoryX(state.signatories.length-1,state.signatories.length),y:.92,size:17,color:'#596579',font:'400'};
+ fields[nameKey]=nameKey;fields[roleKey]=roleKey;
+ nameInput.addEventListener('input',render);roleInput.addEventListener('input',render);
+ sigInput.addEventListener('change',e=>{const file=e.target.files[0];if(!file){person.image=null;render();return;}loadImageFile(file,img=>{person.image=img;render();toast('Signature for '+(nameInput.value||'signatory')+' added.');},['image/png','image/jpeg','image/webp']);});
+ remove.addEventListener('click',()=>removeSignatory(id));
+ updateSignatoryLabels();render();
+}
+function updateSignatoryLabels(){[...$('signatoryList').children].forEach((card,i)=>{const strong=card.querySelector('strong');if(strong)strong.textContent='Signatory '+(i+1);const btn=card.querySelector('.remove-signatory');if(btn)btn.disabled=state.signatories.length<=1;});$('addSignatory').disabled=state.signatories.length>=4;$('addSignatory').textContent=state.signatories.length>=4?'Maximum of four signatories':'＋ Add another signatory';}
+function removeSignatory(id){const index=state.signatories.findIndex(p=>p.id===id);if(index<0||state.signatories.length<=1)return;const [person]=state.signatories.splice(index,1);delete defaults[person.nameKey];delete defaults[person.roleKey];delete fields[person.nameKey];delete fields[person.roleKey];delete state.positions[person.nameKey];delete state.positions[person.roleKey];if(state.selected===person.nameKey||state.selected===person.roleKey)state.selected=null;const card=$('signatoryList').querySelector('[data-signatory-id="'+id+'"]');if(card)card.remove();state.signatories.forEach((p,i)=>{const x=signatoryX(i,state.signatories.length);if(!state.positions[p.nameKey])defaults[p.nameKey].x=x;if(!state.positions[p.roleKey])defaults[p.roleKey].x=x;});updateSignatoryLabels();render();}
 function wrapText(target,text,maxWidth){const words=text.split(/\s+/).filter(Boolean);if(!words.length)return [''];const lines=[];let line='';for(const word of words){const candidate=line?line+' '+word:word;if(line&&target.measureText(candidate).width>maxWidth){lines.push(line);line=word;}else line=candidate;}if(line)lines.push(line);return lines;}
 function drawText(target,key,w,h){const pos=getPos(key),raw=$(fields[key]).value||'',sourceLines=raw.split(/\r?\n/);const size=pos.size/1000*Math.min(w,h);const family=(key==='title'||key==='recipient')?'Georgia, serif':'Arial, sans-serif';const maxWidth=w*.76;target.save();target.textAlign='center';target.textBaseline='middle';target.fillStyle=pos.color;target.font=`${pos.font} ${size}px ${family}`;const rows=[];sourceLines.forEach(line=>rows.push(...wrapText(target,line,maxWidth)));const lineH=size*1.28,y=pos.y*h;rows.forEach((line,i)=>target.fillText(line,w*pos.x,y+(i-(rows.length-1)/2)*lineH));target.restore();}
 function render(){if(!syncCanvasSize())return;const w=canvas.width,h=canvas.height;drawBackground(ctx,w,h,state.template);drawBorder(ctx,w,h);drawLogo(ctx,w,h);drawSignatures(ctx,w,h);Object.keys(defaults).forEach(k=>drawText(ctx,k,w,h));if(state.selected){const p=getPos(state.selected);ctx.save();ctx.strokeStyle='#3478d4';ctx.lineWidth=Math.max(2,w*.001);ctx.setLineDash([8,6]);ctx.strokeRect(p.x*w-w*.17,p.y*h-h*.04,w*.34,h*.08);ctx.restore();}}
@@ -111,7 +135,6 @@ function renderBackgroundGallery(){
   const caption=document.createElement('span');caption.textContent=label;button.append(thumb,caption);button.addEventListener('click',()=>{state.template=style;$('template').value=style;render();renderBackgroundGallery();toast(label+' background selected.');});host.appendChild(button);
  });});const count=$('galleryCountSidebar');if(count)count.textContent=options.length+' designs';
 }
-function loadSignature(file,key){if(!file){state.signatures[key]=null;render();return;}loadImageFile(file,img=>{state.signatures[key]=img;render();toast('Signature '+(key==='sign1'?'1':'2')+' added.');},['image/png','image/jpeg','image/webp']);}
 function applyOrientation(value){let w=Number($('pageWidth').value)||11.7,h=Number($('pageHeight').value)||8.3;if(value==='portrait'&&w>h)[w,h]=[h,w];if(value==='landscape'&&h>w)[w,h]=[h,w];$('pageWidth').value=w.toFixed(1);$('pageHeight').value=h.toFixed(1);render();}
 function pointerPos(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};}
 function nearest(p){let best=null,dist=.075;Object.keys(defaults).forEach(k=>{const q=getPos(k),d=Math.hypot(q.x-p.x,(q.y-p.y)*.8);if(d<dist){best=k;dist=d;}});return best;}
@@ -119,8 +142,7 @@ canvas.addEventListener('pointerdown',e=>{const p=pointerPos(e),key=nearest(p);i
 canvas.addEventListener('pointermove',e=>{if(!drag)return;const p=pointerPos(e),pos=getPos(drag.key);pos.x=Math.max(.08,Math.min(.92,p.x));pos.y=Math.max(.08,Math.min(.95,p.y));state.positions[drag.key]=pos;render();});
 canvas.addEventListener('pointerup',()=>drag=null);canvas.addEventListener('pointercancel',()=>drag=null);
 $('logoInput').addEventListener('change',e=>loadLogo(e.target.files[0]));
-$('signature1').addEventListener('change',e=>loadSignature(e.target.files[0],'sign1'));
-$('signature2').addEventListener('change',e=>loadSignature(e.target.files[0],'sign2'));
+$('addSignatory').addEventListener('click',()=>addSignatory());
 $('orientation').addEventListener('change',e=>applyOrientation(e.target.value));
 $('dropZone').addEventListener('dragover',e=>{e.preventDefault();$('dropZone').classList.add('dragging');});$('dropZone').addEventListener('dragleave',()=>$('dropZone').classList.remove('dragging'));$('dropZone').addEventListener('drop',e=>{e.preventDefault();$('dropZone').classList.remove('dragging');loadLogo(e.dataTransfer.files[0]);});
 function onPageChange(){const w=Number($('pageWidth').value),h=Number($('pageHeight').value);if(w&&h)$('orientation').value=w>=h?'landscape':'portrait';render();}
@@ -140,5 +162,5 @@ $('pngBtn').addEventListener('click',()=>exportImage('png'));$('jpgBtn').addEven
 $('pdfBtn').addEventListener('click',()=>{render();const d=dimensions();if(!d)return;if(!window.jspdf){toast('PDF library did not load. Check your internet connection.');return;}const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:d.w>=d.h?'landscape':'portrait',unit:'in',format:[d.w,d.h],compress:true});pdf.addImage(canvas.toDataURL('image/jpeg',.98),'JPEG',0,0,d.w,d.h);pdf.save(baseName()+'.pdf');toast('Print-ready PDF downloaded.');});
 $('wordBtn').addEventListener('click',()=>{render();const d=dimensions();if(!d)return;const image=canvas.toDataURL('image/png');const doc=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Certificate</title><style>@page{size:${d.w}in ${d.h}in;margin:0}html,body{margin:0;padding:0}img{display:block;width:${d.w}in;height:${d.h}in;object-fit:contain}</style></head><body><img src="${image}" alt="Certificate"></body></html>`;const blob=new Blob(['\ufeff',doc],{type:'application/msword'}),url=URL.createObjectURL(blob);download(url,baseName()+'.doc');setTimeout(()=>URL.revokeObjectURL(url),3000);toast('Word-compatible document downloaded.');});
 $('downloadTop').addEventListener('click',()=>$('pdfBtn').click());
-setPalette(state.colors);render();renderBackgroundGallery();
+addSignatory();addSignatory();setPalette(state.colors);render();renderBackgroundGallery();
 })();
