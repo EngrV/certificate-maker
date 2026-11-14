@@ -23,3 +23,6 @@
 @media(max-width:700px){.background-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 #logoScale{padding:0;accent-color:#2457a6;cursor:pointer}#logoScaleValue{float:right;color:#2457a6;font-weight:700;font-size:10px}
+
+/* Multiple signatory controls */
+.signatory-list{display:grid;gap:10px}.signatory-card-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.remove-signatory{border:0;background:#fff0f0;color:#a33b3b;border-radius:6px;padding:5px 8px;font-size:10px;cursor:pointer}.remove-signatory:disabled{opacity:.35;cursor:not-allowed}#addSignatory:disabled{opacity:.55;cursor:not-allowed}
