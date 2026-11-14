@@ -36,9 +36,9 @@
         <div class="segmented"><button class="active" data-mode="hybrid">Templates + Auto</button><button data-mode="auto">Auto only</button></div>
         <label class="field-label" for="template">Design style</label>
         <select id="template">
-          <option value="elegant">Elegant gold</option><option value="modern">Modern minimal</option>
-          <option value="geometric">Geometric</option><option value="classic">Classic formal</option>
-          <option value="creative">Creative colorful</option>
+          <option value="modern">Modern minimalist</option><option value="elegant">Luxury gold</option>
+          <option value="geometric">Corporate modern</option><option value="classic">Elegant contemporary</option>
+          <option value="creative">Creative modern</option><option value="silver">Silver professional</option>
         </select>
         <label class="field-label" for="borderStyle">Border treatment</label>
         <select id="borderStyle"><option value="double">Double line</option><option value="single">Single line</option><option value="ornate">Ornamental corners</option><option value="none">No border</option></select>
@@ -72,6 +72,9 @@
         <div class="two-fields"><div><label class="field-label" for="pageWidth">Width (in)</label><input id="pageWidth" type="number" min="3" max="30" step=".1" value="11.7"></div><div><label class="field-label" for="pageHeight">Height (in)</label><input id="pageHeight" type="number" min="3" max="30" step=".1" value="8.3"></div></div>
         <label class="field-label" for="dpi">Export quality</label><select id="dpi"><option value="150">150 DPI — standard</option><option value="300" selected>300 DPI — print quality</option></select>
         <label class="field-label" for="logoPosition">Logo position</label><select id="logoPosition"><option value="top">Top center</option><option value="left">Top left</option><option value="right">Top right</option><option value="none">Hide logo</option></select>
+        <label class="field-label" for="logoScale">Logo size <output id="logoScaleValue">100%</output></label>
+        <input id="logoScale" type="range" min="25" max="250" step="5" value="100" aria-label="Resize logo proportionally">
+        <p class="hint">Resize the logo proportionally. Its original width-to-height ratio is always preserved.</p>
       </section>
       <section class="panel">
         <h2><span class="step">06</span> Selected element</h2>
