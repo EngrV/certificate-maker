@@ -1,41 +1,26 @@
-# Certify Studio — Logo-Based Certificate Maker
+# Certify Studio — Certificate Maker
 
-A static certificate designer that runs entirely in the browser and can be hosted free on GitHub Pages.
+A browser-based certificate designer for GitHub Pages.
 
-## Included files
-- `index.html` — application structure
-- `styles.css` — responsive interface
-- `app.js` — logo color sampling, background generation, editor, and exports
+## Deploy
 
-## Run locally
-1. Download and extract the project.
-2. Open `index.html` in a modern browser.
-3. Upload a logo, choose a design style, edit the certificate fields, and export.
-
-The PDF library is loaded from a CDN, so PDF export requires an internet connection. PNG/JPG and the editor work locally.
-
-## Publish with GitHub Pages
-1. Create a new GitHub repository, for example `certificate-maker`.
-2. Upload `index.html`, `styles.css`, and `app.js` to the repository root.
-3. Open **Settings → Pages**.
-4. Under **Build and deployment**, select **Deploy from a branch**.
-5. Choose branch `main` and folder `/ (root)`, then click **Save**.
-6. Wait for the deployment and open the published URL shown in the Pages section.
+1. Extract this folder.
+2. Upload `index.html`, `styles.css`, `app.js`, and `README.md` to the same folder in your GitHub Pages repository.
+3. Commit and push the changes.
+4. Hard-refresh the published page (Ctrl + F5) or open it in a private/incognito window to avoid cached older files.
 
 ## Features
-- Upload PNG, JPG, WEBP, or SVG organization logos.
-- Sample dominant colors from the logo using browser canvas.
-- Generate elegant, modern, geometric, classic, and creative certificate backgrounds.
-- Choose automatic background mode or template-plus-automatic mode.
-- Edit certificate wording, organization name, date, and two signatories.
-- Drag text on the preview; select an item to change its size and color.
-- Choose custom page dimensions in inches or A4, Letter, and Legal landscape presets.
-- Export high-resolution PNG, JPG, and PDF.
-- No account, backend, API key, or database required.
+
+- Upload an organization logo and sample brand colors.
+- Select from five visible background previews in the sidebar or below the live certificate canvas.
+- Edit certificate text and drag text elements on the preview.
+- Portrait and landscape orientation, preset paper sizes, and custom dimensions in inches.
+- Logo and signature images are drawn with proportional `contain` sizing so they are not stretched.
+- Two optional signatory names, positions, and signature image uploads.
+- Export PNG, JPG, PDF, and a Word-compatible `.doc` document.
 
 ## Notes
-- Custom page dimensions are limited to 3–30 inches per side.
-- For best print output, use 300 DPI and check the printer's actual paper settings.
-- Uploaded logos and edits are processed in the current browser tab; this starter version does not upload them to a server or save projects between sessions.
-- PDF export uses jsPDF from cdnjs. If the CDN is unavailable, PNG/JPG export remains available.
-- This is a client-side color extraction and procedural graphic generator, not an AI image-generation service.
+
+- All image processing and exports happen in the browser.
+- The Word-compatible `.doc` export embeds the finished certificate as an image. It preserves the design, but the text is not separately editable in Word.
+- After replacing the files on GitHub Pages, hard-refresh the website to ensure the new JavaScript and CSS are loaded.
