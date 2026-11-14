@@ -43,6 +43,7 @@
         <label class="field-label" for="borderStyle">Border treatment</label>
         <select id="borderStyle"><option value="double">Double line</option><option value="single">Single line</option><option value="ornate">Ornamental corners</option><option value="none">No border</option></select>
         <button id="generateBtn" class="btn secondary full">✦ Generate new background</button>
+        <div class="background-gallery sidebar-gallery"><div class="gallery-heading"><div><strong>Choose a background</strong><small>Click any preview to apply it.</small></div><span id="galleryCountSidebar">5 designs</span></div><div id="backgroundChoicesSidebar" class="background-choices"></div></div>
       </section>
 
       <section class="panel">
@@ -53,19 +54,19 @@
         <label class="field-label" for="recipient">Recipient name</label><input id="recipient" value="Recipient's Full Name">
         <label class="field-label" for="bodyText">Description</label><textarea id="bodyText" rows="3">In recognition of your valuable contribution, dedication, and outstanding commitment.</textarea>
         <label class="field-label" for="dateText">Date / occasion</label><input id="dateText" value="Given this 13th day of November, 2026">
-        <div class="two-fields"><div><label class="field-label" for="sign1">Signatory 1</label><input id="sign1" value="NAME OF SIGNATORY"></div><div><label class="field-label" for="role1">Position</label><input id="role1" value="Position / Title"></div></div>
-        <div class="two-fields"><div><label class="field-label" for="sign2">Signatory 2</label><input id="sign2" value="NAME OF SIGNATORY"></div><div><label class="field-label" for="role2">Position</label><input id="role2" value="Position / Title"></div></div>
-        <div class="two-fields signature-fields">
-          <div><label class="field-label" for="signature1">Signature 1 (optional)</label><input id="signature1" type="file" accept="image/png,image/jpeg,image/webp"></div>
-          <div><label class="field-label" for="signature2">Signature 2 (optional)</label><input id="signature2" type="file" accept="image/png,image/jpeg,image/webp"></div>
-        </div>
-        <p class="hint">Upload transparent PNG signatures for the cleanest result. Signatures can be left blank.</p>
+
       </section>
 
+      <section class="panel signatory-panel">
+        <h2><span class="step">04</span> Signatories & signatures</h2>
+        <p class="hint">Enter the signatory names and positions. Signature images are optional and will keep their original proportions.</p>
+        <div class="signatory-card"><strong>Signatory 1</strong><label class="field-label" for="sign1">Full name</label><input id="sign1" value="NAME OF SIGNATORY"><label class="field-label" for="role1">Position / title</label><input id="role1" value="Position / Title"><label class="field-label" for="signature1">Upload signature (optional)</label><input id="signature1" type="file" accept="image/png,image/jpeg,image/webp"></div>
+        <div class="signatory-card"><strong>Signatory 2</strong><label class="field-label" for="sign2">Full name</label><input id="sign2" value="NAME OF SIGNATORY"><label class="field-label" for="role2">Position / title</label><input id="role2" value="Position / Title"><label class="field-label" for="signature2">Upload signature (optional)</label><input id="signature2" type="file" accept="image/png,image/jpeg,image/webp"></div>
+        <p class="hint">Tip: transparent PNG signatures look best.</p>
+      </section>
       <section class="panel">
-        <h2><span class="step">04</span> Page & layout</h2>
-        <label class="field-label" for="orientation">Orientation</label>
-        <select id="orientation"><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select>
+        <h2><span class="step">05</span> Page & layout</h2>
+        <label class="field-label" for="orientation">Orientation</label><select id="orientation"><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select>
         <label class="field-label" for="paperPreset">Page preset</label>
         <select id="paperPreset"><option value="custom">Custom dimensions</option><option value="a4">A4 landscape</option><option value="letter">US Letter landscape</option><option value="legal">US Legal landscape</option></select>
         <div class="two-fields"><div><label class="field-label" for="pageWidth">Width (in)</label><input id="pageWidth" type="number" min="3" max="30" step=".1" value="11.7"></div><div><label class="field-label" for="pageHeight">Height (in)</label><input id="pageHeight" type="number" min="3" max="30" step=".1" value="8.3"></div></div>
@@ -73,7 +74,7 @@
         <label class="field-label" for="logoPosition">Logo position</label><select id="logoPosition"><option value="top">Top center</option><option value="left">Top left</option><option value="right">Top right</option><option value="none">Hide logo</option></select>
       </section>
       <section class="panel">
-        <h2><span class="step">05</span> Selected element</h2>
+        <h2><span class="step">06</span> Selected element</h2>
         <p class="hint">Click or drag text on the preview to reposition it. Select an item to adjust its size and color.</p>
         <div class="two-fields"><div><label class="field-label" for="fontSize">Font size</label><input id="fontSize" type="number" min="8" max="120" value="30"></div><div><label class="field-label" for="textColor">Text color</label><input id="textColor" type="color" value="#173b69"></div></div>
         <button id="resetLayout" class="btn ghost full">Reset text positions</button>
@@ -85,10 +86,7 @@
       <div class="workspace-head"><div><p class="eyebrow">LIVE CANVAS</p><h2>Your certificate</h2><p class="subtle">Select and drag text elements directly on the certificate.</p></div><div class="zoom-controls"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">Fit</span><button id="zoomIn" aria-label="Zoom in">＋</button></div></div>
       <div class="canvas-wrap" id="canvasWrap"><canvas id="certificateCanvas" width="3508" height="2480"></canvas></div>
       <div class="canvas-footer"><span id="canvasDimensions">11.7 × 8.3 inches · 300 DPI</span><span id="selectionLabel">No element selected</span></div>
-      <section class="background-gallery">
-        <div class="gallery-heading"><div><strong>Generated backgrounds</strong><small>Choose a design to apply it to your certificate.</small></div><span id="galleryCount">5 designs</span></div>
-        <div id="backgroundChoices" class="background-choices"></div>
-      </section>
+      <section class="background-gallery workspace-gallery"><div class="gallery-heading"><div><strong>Background previews</strong><small>Select a thumbnail to change the certificate background.</small></div></div><div id="backgroundChoicesBelow" class="background-choices"></div></section>
       <div class="download-strip"><div><strong>Ready to export?</strong><small>High-resolution files are generated on your device.</small></div><div class="download-actions"><button id="pngBtn" class="btn secondary">Download PNG</button><button id="jpgBtn" class="btn secondary">Download JPG</button><button id="pdfBtn" class="btn primary">Download PDF</button><button id="wordBtn" class="btn secondary">Save Word (.doc)</button></div></div>
     </section>
   </main>
