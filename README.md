@@ -16,7 +16,7 @@ A browser-based certificate designer for GitHub Pages.
 - Edit certificate text and drag text elements on the preview.
 - Portrait and landscape orientation, preset paper sizes, and custom dimensions in inches.
 - Logo and signature images are drawn with proportional `contain` sizing so they are not stretched.
-- Two optional signatory names, positions, and signature image uploads.
+- Add or remove signatories (up to four), each with a name, position, and optional signature image upload.
 - Export PNG, JPG, PDF, and a Word-compatible `.doc` document.
 
 ## Notes
