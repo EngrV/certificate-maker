@@ -60,9 +60,9 @@
       <section class="panel signatory-panel">
         <h2><span class="step">04</span> Signatories & signatures</h2>
         <p class="hint">Enter the signatory names and positions. Signature images are optional and will keep their original proportions.</p>
-        <div class="signatory-card"><strong>Signatory 1</strong><label class="field-label" for="sign1">Full name</label><input id="sign1" value="NAME OF SIGNATORY"><label class="field-label" for="role1">Position / title</label><input id="role1" value="Position / Title"><label class="field-label" for="signature1">Upload signature (optional)</label><input id="signature1" type="file" accept="image/png,image/jpeg,image/webp"></div>
-        <div class="signatory-card"><strong>Signatory 2</strong><label class="field-label" for="sign2">Full name</label><input id="sign2" value="NAME OF SIGNATORY"><label class="field-label" for="role2">Position / title</label><input id="role2" value="Position / Title"><label class="field-label" for="signature2">Upload signature (optional)</label><input id="signature2" type="file" accept="image/png,image/jpeg,image/webp"></div>
-        <p class="hint">Tip: transparent PNG signatures look best.</p>
+        <div id="signatoryList" class="signatory-list"></div>
+        <button id="addSignatory" type="button" class="btn secondary full">＋ Add another signatory</button>
+        <p class="hint">Add up to four people. Each person can have a name, position, and optional signature image. Transparent PNG signatures look best.</p>
       </section>
       <section class="panel">
         <h2><span class="step">05</span> Page & layout</h2>
