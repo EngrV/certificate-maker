@@ -55,10 +55,17 @@
         <label class="field-label" for="dateText">Date / occasion</label><input id="dateText" value="Given this 13th day of November, 2026">
         <div class="two-fields"><div><label class="field-label" for="sign1">Signatory 1</label><input id="sign1" value="NAME OF SIGNATORY"></div><div><label class="field-label" for="role1">Position</label><input id="role1" value="Position / Title"></div></div>
         <div class="two-fields"><div><label class="field-label" for="sign2">Signatory 2</label><input id="sign2" value="NAME OF SIGNATORY"></div><div><label class="field-label" for="role2">Position</label><input id="role2" value="Position / Title"></div></div>
+        <div class="two-fields signature-fields">
+          <div><label class="field-label" for="signature1">Signature 1 (optional)</label><input id="signature1" type="file" accept="image/png,image/jpeg,image/webp"></div>
+          <div><label class="field-label" for="signature2">Signature 2 (optional)</label><input id="signature2" type="file" accept="image/png,image/jpeg,image/webp"></div>
+        </div>
+        <p class="hint">Upload transparent PNG signatures for the cleanest result. Signatures can be left blank.</p>
       </section>
 
       <section class="panel">
         <h2><span class="step">04</span> Page & layout</h2>
+        <label class="field-label" for="orientation">Orientation</label>
+        <select id="orientation"><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select>
         <label class="field-label" for="paperPreset">Page preset</label>
         <select id="paperPreset"><option value="custom">Custom dimensions</option><option value="a4">A4 landscape</option><option value="letter">US Letter landscape</option><option value="legal">US Legal landscape</option></select>
         <div class="two-fields"><div><label class="field-label" for="pageWidth">Width (in)</label><input id="pageWidth" type="number" min="3" max="30" step=".1" value="11.7"></div><div><label class="field-label" for="pageHeight">Height (in)</label><input id="pageHeight" type="number" min="3" max="30" step=".1" value="8.3"></div></div>
@@ -78,7 +85,11 @@
       <div class="workspace-head"><div><p class="eyebrow">LIVE CANVAS</p><h2>Your certificate</h2><p class="subtle">Select and drag text elements directly on the certificate.</p></div><div class="zoom-controls"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">Fit</span><button id="zoomIn" aria-label="Zoom in">＋</button></div></div>
       <div class="canvas-wrap" id="canvasWrap"><canvas id="certificateCanvas" width="3508" height="2480"></canvas></div>
       <div class="canvas-footer"><span id="canvasDimensions">11.7 × 8.3 inches · 300 DPI</span><span id="selectionLabel">No element selected</span></div>
-      <div class="download-strip"><div><strong>Ready to export?</strong><small>High-resolution files are generated on your device.</small></div><div class="download-actions"><button id="pngBtn" class="btn secondary">Download PNG</button><button id="jpgBtn" class="btn secondary">Download JPG</button><button id="pdfBtn" class="btn primary">Download PDF</button></div></div>
+      <section class="background-gallery">
+        <div class="gallery-heading"><div><strong>Generated backgrounds</strong><small>Choose a design to apply it to your certificate.</small></div><span id="galleryCount">5 designs</span></div>
+        <div id="backgroundChoices" class="background-choices"></div>
+      </section>
+      <div class="download-strip"><div><strong>Ready to export?</strong><small>High-resolution files are generated on your device.</small></div><div class="download-actions"><button id="pngBtn" class="btn secondary">Download PNG</button><button id="jpgBtn" class="btn secondary">Download JPG</button><button id="pdfBtn" class="btn primary">Download PDF</button><button id="wordBtn" class="btn secondary">Save Word (.doc)</button></div></div>
     </section>
   </main>
   <div id="toast" role="status" aria-live="polite"></div>
