@@ -5,7 +5,7 @@ const canvas = $('certificateCanvas');
 const ctx = canvas.getContext('2d');
 const state = {
   logo: null, colors: ['#173b69','#d4a94f','#e9edf2','#ffffff'],
-  template: 'elegant', mode: 'hybrid', selected: null,
+  template: 'elegant', mode: 'hybrid', selected: null, logoScale: 1,
   positions: {}, signatures: {sign1:null, sign2:null},
   canvasW: 0, canvasH: 0
 };
@@ -43,12 +43,50 @@ function getPos(key){return {...defaults[key],...(state.positions[key]||{})};}
 function loadImageFile(file, callback, allowed){if(!file)return;if(!allowed.includes(file.type)){toast('Please choose a supported image file.');return;}const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{callback(img);URL.revokeObjectURL(url);};img.onerror=()=>{URL.revokeObjectURL(url);toast('Could not read that image.');};img.src=url;}
 function loadLogo(file){loadImageFile(file,img=>{state.logo=img;$('logoThumb').src=img.src;$('logoThumb').hidden=false;$('logoName').textContent=file.name;setPalette(extractColors(img));render();renderBackgroundGallery();toast('Logo uploaded. Original proportions will be preserved.');},['image/png','image/jpeg','image/webp','image/svg+xml']);}
 function drawBackground(target,w,h,style){
- const [primary,accent,light]=state.colors;target.save();target.fillStyle='#fff';target.fillRect(0,0,w,h);
- if(style==='modern'){target.fillStyle=light;target.fillRect(0,0,w,h);target.fillStyle=primary;target.fillRect(0,0,w*.105,h);target.fillStyle=accent;target.fillRect(w*.105,0,w*.009,h);target.globalAlpha=.08;target.fillStyle=primary;target.beginPath();target.moveTo(w*.82,0);target.lineTo(w,0);target.lineTo(w,h);target.lineTo(w*.96,h);target.closePath();target.fill();}
- else if(style==='geometric'||style==='creative'){target.fillStyle=light;target.fillRect(0,0,w,h);target.globalAlpha=.12;target.fillStyle=primary;for(let i=0;i<8;i++){target.beginPath();target.moveTo(w*(.72+i*.05),0);target.lineTo(w,h*(.12+i*.1));target.lineTo(w,h*(.22+i*.1));target.closePath();target.fill();}target.globalAlpha=1;target.fillStyle=accent;target.fillRect(0,0,w,.018*h);}
- else if(style==='classic'){target.fillStyle='#fbf8f0';target.fillRect(0,0,w,h);target.globalAlpha=.07;target.strokeStyle=primary;target.lineWidth=Math.max(1,w*.0005);for(let x=0;x<w;x+=Math.max(20,w*.01)){target.beginPath();target.moveTo(x,0);target.lineTo(x,h);target.stroke();}}
- else {target.fillStyle='#fffdf8';target.fillRect(0,0,w,h);target.globalAlpha=.07;target.fillStyle=accent;target.beginPath();target.arc(w,0,w*.35,0,Math.PI*2);target.fill();}
- target.globalAlpha=1;target.globalAlpha=.045;target.strokeStyle=primary;target.lineWidth=Math.max(2,w*.0015);for(let i=0;i<5;i++){target.beginPath();target.arc(w*.5,h*.5,Math.min(w,h)*(.19+i*.018),0,Math.PI*2);target.stroke();}target.restore();
+ const [primary,accent,light]=state.colors;target.save();
+ target.fillStyle='#ffffff';target.fillRect(0,0,w,h);
+ if(style==='modern'){
+  // Modern minimalist: generous white space, slim navy and blue rules.
+  target.fillStyle='#f8fafc';target.fillRect(0,0,w,h);
+  target.fillStyle=primary;target.fillRect(0,0,w*.012,h);
+  target.fillStyle=accent;target.fillRect(w*.012,0,w*.004,h);
+  target.strokeStyle=primary;target.globalAlpha=.18;target.lineWidth=Math.max(2,w*.0015);
+  target.beginPath();target.moveTo(w*.12,h*.18);target.lineTo(w*.88,h*.18);target.stroke();
+  target.beginPath();target.moveTo(w*.12,h*.84);target.lineTo(w*.88,h*.84);target.stroke();
+ }else if(style==='elegant'){
+  // Luxury gold: warm ivory, gold frame and restrained corner details.
+  target.fillStyle='#fffdf7';target.fillRect(0,0,w,h);
+  target.strokeStyle='#bd9848';target.lineWidth=Math.max(3,w*.004);target.strokeRect(w*.035,h*.045,w*.93,h*.91);
+  target.strokeStyle='#e2c987';target.lineWidth=Math.max(1,w*.0015);target.strokeRect(w*.047,h*.06,w*.906,h*.88);
+  target.fillStyle='#bd9848';[[w*.035,h*.045],[w*.965,h*.045],[w*.035,h*.955],[w*.965,h*.955]].forEach(([x,y])=>{target.beginPath();target.arc(x,y,Math.min(w,h)*.012,0,Math.PI*2);target.fill();});
+ }else if(style==='geometric'){
+  // Corporate modern: crisp navy/cobalt diagonals.
+  target.fillStyle='#f5f8fc';target.fillRect(0,0,w,h);
+  target.fillStyle=primary;target.beginPath();target.moveTo(w*.78,0);target.lineTo(w,0);target.lineTo(w,h);target.lineTo(w*.94,h);target.closePath();target.fill();
+  target.fillStyle=accent;target.beginPath();target.moveTo(w*.9,0);target.lineTo(w,0);target.lineTo(w,h*.58);target.lineTo(w*.97,h*.48);target.closePath();target.fill();
+  target.globalAlpha=.12;target.fillStyle=primary;target.beginPath();target.moveTo(0,h*.78);target.lineTo(w*.16,h);target.lineTo(0,h);target.closePath();target.fill();
+ }else if(style==='classic'){
+  // Elegant contemporary: soft sage and a fine botanical-inspired arch motif.
+  target.fillStyle='#f8faf7';target.fillRect(0,0,w,h);
+  target.strokeStyle='#8a9b83';target.globalAlpha=.55;target.lineWidth=Math.max(2,w*.002);
+  target.beginPath();target.arc(w*.5,h*.12,Math.min(w,h)*.24,Math.PI,Math.PI*2);target.stroke();
+  target.strokeStyle='#c5d0bf';target.lineWidth=Math.max(1,w*.001);target.strokeRect(w*.045,h*.05,w*.91,h*.9);
+  target.fillStyle='#8a9b83';target.globalAlpha=.14;target.fillRect(0,0,w*.018,h);target.fillRect(w*.982,0,w*.018,h);
+ }else if(style==='creative'){
+  // Creative modern: soft color blocks with contemporary rounded geometry.
+  target.fillStyle='#fbf8ff';target.fillRect(0,0,w,h);
+  target.globalAlpha=.16;target.fillStyle=primary;target.beginPath();target.arc(w*.98,h*.02,Math.min(w,h)*.3,0,Math.PI*2);target.fill();
+  target.fillStyle=accent;target.globalAlpha=.2;target.beginPath();target.arc(w*.02,h*.98,Math.min(w,h)*.25,0,Math.PI*2);target.fill();
+  target.globalAlpha=.9;target.fillStyle=primary;target.fillRect(0,0,w*.012,h);target.fillStyle=accent;target.fillRect(0,h*.965,w,h*.035);
+ }else if(style==='silver'){
+  // Silver professional: cool gray paper, silver double rules and subtle panels.
+  target.fillStyle='#f5f6f8';target.fillRect(0,0,w,h);
+  target.fillStyle='#ffffff';target.fillRect(w*.075,h*.075,w*.85,h*.85);
+  target.strokeStyle='#9aa3af';target.lineWidth=Math.max(3,w*.003);target.strokeRect(w*.045,h*.045,w*.91,h*.91);
+  target.strokeStyle='#d1d5db';target.lineWidth=Math.max(1,w*.0015);target.strokeRect(w*.06,h*.06,w*.88,h*.88);
+  target.fillStyle='#e5e7eb';target.globalAlpha=.5;target.fillRect(w*.075,h*.075,w*.85,h*.012);
+ }
+ target.globalAlpha=1;target.restore();
 }
 function drawBorder(target,w,h){const [p,a]=state.colors,mode=$('borderStyle').value;if(mode==='none')return;const m=Math.min(w,h)*.055;target.save();target.strokeStyle=mode==='single'?p:a;target.lineWidth=Math.max(2,Math.min(w,h)*.003);target.strokeRect(m,m,w-2*m,h-2*m);if(mode==='double'||mode==='ornate'){target.strokeStyle=mode==='double'?a:p;target.lineWidth=Math.max(1,Math.min(w,h)*.0015);target.strokeRect(m*1.18,m*1.18,w-2*m*1.18,h-2*m*1.18);}if(mode==='ornate'){target.strokeStyle=a;target.lineWidth=Math.max(2,Math.min(w,h)*.004);const s=m*.7;[[m,m],[w-m,m],[m,h-m],[w-m,h-m]].forEach(([x,y])=>{target.beginPath();target.arc(x,y,s,0,Math.PI*2);target.stroke();});}target.restore();}
 function drawContainedImage(target,img,boxX,boxY,boxW,boxH,align='center'){
@@ -58,14 +96,14 @@ function drawContainedImage(target,img,boxX,boxY,boxW,boxH,align='center'){
  let x=boxX+(boxW-drawW)/2;if(align==='left')x=boxX;if(align==='right')x=boxX+boxW-drawW;
  target.drawImage(img,x,boxY+(boxH-drawH)/2,drawW,drawH);
 }
-function drawLogo(target,w,h){if(!state.logo||$('logoPosition').value==='none')return;const boxW=w*.18,boxH=h*.15,boxY=h*.035;let boxX=(w-boxW)/2,align='center';if($('logoPosition').value==='left'){boxX=w*.055;align='left';}if($('logoPosition').value==='right'){boxX=w-boxW-w*.055;align='right';}drawContainedImage(target,state.logo,boxX,boxY,boxW,boxH,align);}
+function drawLogo(target,w,h){if(!state.logo||$('logoPosition').value==='none')return;const scale=state.logoScale||1,boxW=w*.18*scale,boxH=h*.15*scale,boxY=h*.035;let boxX=(w-boxW)/2,align='center';if($('logoPosition').value==='left'){boxX=w*.055;align='left';}if($('logoPosition').value==='right'){boxX=w-boxW-w*.055;align='right';}drawContainedImage(target,state.logo,boxX,boxY,boxW,boxH,align);}
 function drawSignatures(target,w,h){[['sign1',.29],['sign2',.71]].forEach(([key,x])=>{const img=state.signatures[key];if(!img)return;drawContainedImage(target,img,w*(x-.075),h*.79,w*.15,h*.07);});}
 function wrapText(target,text,maxWidth){const words=text.split(/\s+/).filter(Boolean);if(!words.length)return [''];const lines=[];let line='';for(const word of words){const candidate=line?line+' '+word:word;if(line&&target.measureText(candidate).width>maxWidth){lines.push(line);line=word;}else line=candidate;}if(line)lines.push(line);return lines;}
 function drawText(target,key,w,h){const pos=getPos(key),raw=$(fields[key]).value||'',sourceLines=raw.split(/\r?\n/);const size=pos.size/1000*Math.min(w,h);const family=(key==='title'||key==='recipient')?'Georgia, serif':'Arial, sans-serif';const maxWidth=w*.76;target.save();target.textAlign='center';target.textBaseline='middle';target.fillStyle=pos.color;target.font=`${pos.font} ${size}px ${family}`;const rows=[];sourceLines.forEach(line=>rows.push(...wrapText(target,line,maxWidth)));const lineH=size*1.28,y=pos.y*h;rows.forEach((line,i)=>target.fillText(line,w*pos.x,y+(i-(rows.length-1)/2)*lineH));target.restore();}
 function render(){if(!syncCanvasSize())return;const w=canvas.width,h=canvas.height;drawBackground(ctx,w,h,state.template);drawBorder(ctx,w,h);drawLogo(ctx,w,h);drawSignatures(ctx,w,h);Object.keys(defaults).forEach(k=>drawText(ctx,k,w,h));if(state.selected){const p=getPos(state.selected);ctx.save();ctx.strokeStyle='#3478d4';ctx.lineWidth=Math.max(2,w*.001);ctx.setLineDash([8,6]);ctx.strokeRect(p.x*w-w*.17,p.y*h-h*.04,w*.34,h*.08);ctx.restore();}}
 function renderBackgroundGallery(){
  const hosts=[$('backgroundChoicesSidebar'),$('backgroundChoicesBelow')].filter(Boolean);
- const options=[['elegant','Elegant gold'],['modern','Modern minimal'],['geometric','Geometric'],['classic','Classic formal'],['creative','Creative colorful']];
+ const options=[['modern','Modern minimalist'],['elegant','Luxury gold'],['geometric','Corporate modern'],['classic','Elegant contemporary'],['creative','Creative modern'],['silver','Silver professional']];
  hosts.forEach(host=>{host.innerHTML='';options.forEach(([style,label])=>{
   const button=document.createElement('button');button.type='button';button.className='background-option'+(state.template===style?' active':'');button.setAttribute('aria-label','Select '+label+' background');
   const thumb=document.createElement('canvas');thumb.width=320;thumb.height=190;const t=thumb.getContext('2d');drawBackground(t,320,190,style);
@@ -89,8 +127,9 @@ function onPageChange(){const w=Number($('pageWidth').value),h=Number($('pageHei
 document.querySelectorAll('input:not([type=file]),textarea,select').forEach(el=>el.addEventListener('input',()=>{if(el.id==='paperPreset'&&presets[el.value]){$('pageWidth').value=presets[el.value][0];$('pageHeight').value=presets[el.value][1];$('orientation').value=presets[el.value][0]>=presets[el.value][1]?'landscape':'portrait';}if(el.id==='pageWidth'||el.id==='pageHeight'){$('paperPreset').value='custom';const w=Number($('pageWidth').value),h=Number($('pageHeight').value);if(w&&h)$('orientation').value=w>=h?'landscape':'portrait';}if(el.id==='fontSize'&&state.selected){const p=getPos(state.selected);p.size=Math.max(8,Math.min(120,Number(el.value)||30));state.positions[state.selected]=p;}if(el.id==='textColor'&&state.selected){const p=getPos(state.selected);p.color=el.value;state.positions[state.selected]=p;}render();}));
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{state.mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));toast(state.mode==='auto'?'Automatic logo-based design selected.':'Template and automatic generation selected.');}));
 $('template').addEventListener('change',e=>{state.template=e.target.value;render();renderBackgroundGallery();});
-['borderStyle','logoPosition','dpi'].forEach(id=>$(id).addEventListener('change',render));$('pageWidth').addEventListener('change',onPageChange);$('pageHeight').addEventListener('change',onPageChange);
-$('generateBtn').addEventListener('click',()=>{if(state.logo)setPalette(extractColors(state.logo));const styles=['elegant','modern','geometric','classic','creative'];if(state.mode==='auto'){const current=styles.indexOf(state.template);state.template=styles[(current+1+Math.floor(Math.random()*(styles.length-1)))%styles.length];$('template').value=state.template;}render();renderBackgroundGallery();toast('Background choices updated. Select a thumbnail to apply it.');});
+['borderStyle','logoPosition','dpi'].forEach(id=>$(id).addEventListener('change',render));
+$('logoScale').addEventListener('input',e=>{state.logoScale=Number(e.target.value)/100;$('logoScaleValue').textContent=e.target.value+'%';render();});$('pageWidth').addEventListener('change',onPageChange);$('pageHeight').addEventListener('change',onPageChange);
+$('generateBtn').addEventListener('click',()=>{if(state.logo)setPalette(extractColors(state.logo));const styles=['modern','elegant','geometric','classic','creative','silver'];if(state.mode==='auto'){const current=styles.indexOf(state.template);state.template=styles[(current+1+Math.floor(Math.random()*(styles.length-1)))%styles.length];$('template').value=state.template;}render();renderBackgroundGallery();toast('Background choices updated. Select a thumbnail to apply it.');});
 $('refreshColors').addEventListener('click',()=>{if(state.logo){setPalette(extractColors(state.logo));render();renderBackgroundGallery();toast('Brand colors refreshed.');}else toast('Upload a logo first.');});
 $('resetLayout').addEventListener('click',()=>{state.positions={};state.selected=null;$('selectionLabel').textContent='No element selected';render();});
 $('zoomIn').addEventListener('click',()=>{const current=parseInt(canvas.style.maxHeight)||65;canvas.style.maxHeight=Math.min(95,current+10)+'vh';});$('zoomOut').addEventListener('click',()=>{const current=parseInt(canvas.style.maxHeight)||65;canvas.style.maxHeight=Math.max(25,current-10)+'vh';});
